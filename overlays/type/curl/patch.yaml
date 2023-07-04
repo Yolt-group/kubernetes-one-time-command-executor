@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kubernetes-otc
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-secret-curl.sh: $(ENVIRONMENT_NAME)/database/$(MICROSERVICE_NAME)/creds/$(MICROSERVICE_NAME)
+        vault.hashicorp.com/agent-inject-template-curl.sh: |
+          #!/bin/bash
+          set -e +x
+          today=$(date +'%m/%d/%Y')
+          run_only_on="$(EXECUTION_DATE)"
+          if [ "$run_only_on" == "$today" ];
+          then
+            #curl
+          fi
+    spec:
+      containers:
+        - args:
+            - /vault/secrets/curl.sh
+          command:
+            - /bin/bash
+          image: 627987680837.dkr.ecr.eu-central-1.amazonaws.com/prd/sre/cassandra:4.0.1-637563
+          name: kubernetes-otc
+          resources:
+            limits:
+              memory: 64Mi
+              cpu: 100m

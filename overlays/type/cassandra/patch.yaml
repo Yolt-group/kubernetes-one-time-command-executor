@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kubernetes-otc
+spec:
+  ttlSecondsAfterFinished: 3600 
+  backoffLimit: 1
+  template:
+    metadata:
+      annotations:
+        vault.hashicorp.com/agent-inject-secret-cqlshrc: $(ENVIRONMENT_NAME)/database/cassa/creds/$(NAMESPACE_PREFIX)$(MICROSERVICE_NAME)
+        vault.hashicorp.com/agent-inject-template-cqlshrc: |
+          {{- with secret "$(ENVIRONMENT_NAME)/database/cassa/creds/$(NAMESPACE_PREFIX)$(MICROSERVICE_NAME)" -}}
+          [authentication]
+          username={{- .Data.username }}
+          password={{- .Data.password }}
+          [connection]
+          hostname = cassa.$(ENVIRONMENT_NAME).yolt.io
+          port = 9142
+          {{- end }}
+    spec:
+      containers:
+      - args:
+        - -c
+        - "if [[ $(date +'%m/%d/%Y') != '$(EXECUTION_DATE)' ]] ; then echo 'wrong date to execute job' && exit 1000; fi; /bin/bash /opt/cassandra/bin/cqlsh --cqlshrc=/vault/secrets/cqlshrc -f /queries/query.cql;"
+        command:
+        - /bin/bash
+        image: 627987680837.dkr.ecr.eu-central-1.amazonaws.com/prd/sre/cassandra:4.0.1-637563
+        name: kubernetes-otc
+        volumeMounts:
+        - mountPath: /home/cassandra
+          name: cassandra-home
+        - mountPath: /queries
+          name: queries
+      volumes:
+      - name: cassandra-home
+        emptyDir:
+          medium: Memory
+      - name: queries
+        configMap:
+          name: kubernetes-otc-query-sql-cassandra

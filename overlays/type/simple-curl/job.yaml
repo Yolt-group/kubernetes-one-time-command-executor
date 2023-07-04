@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kubernetes-otc
+  namespace: $(POD_NAMESPACE)
+spec:
+  ttlSecondsAfterFinished: 60
+  backoffLimit: 1
+  template:
+    spec:
+      containers:
+        - name: kubernetes-otc
+          image: 627987680837.dkr.ecr.eu-central-1.amazonaws.com/prd/yolt-deployment-tools-jdk17:master-636665
+          imagePullPolicy: IfNotPresent
+          args:
+            - -c
+            - "if [[ $(date +'%m/%d/%Y') != '$(EXECUTION_DATE)' ]] ; then echo 'wrong date to execute job' && exit 1000; fi; #curl something';"
+          command:
+            - /bin/bash
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsGroup: 999
+            runAsNonRoot: true
+            runAsUser: 999
+      restartPolicy: Never

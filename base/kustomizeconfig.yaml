@@ -1,0 +1,11 @@
+varReference:
+- path: spec/template/spec/containers/image
+  kind: Job
+- path: spec/template/metadata/annotations
+  kind: Job
+- path: spec/template/spec/serviceAccount
+  kind: Job
+- path: metadata/namespace
+  kind: Job
+- path: metadata/namespace
+  kind: ConfigMap

@@ -1,0 +1,11 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: $(POD_NAMESPACE)
+commonLabels:
+  jobs.kubernetes.io/name: "kubernetes-otc-cassandra"
+  app.kubernetes.io/managed-by: "kubernetes-otc"
+bases:
+- ../../../env/yfb-acc
+- ../../../type/cassandra
+- ../../../service

@@ -1,0 +1,42 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: $(POD_NAMESPACE)
+resources:
+- service-cm.yaml
+vars:
+  - name: RDS_HOSTNAME_PREFIX
+    objref:
+      kind: ConfigMap
+      name: kubernetes-otc-kustomize-cm-service
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.rds_hostname_prefix
+  - name: DATABASE_NAME
+    objref:
+      kind: ConfigMap
+      name: kubernetes-otc-kustomize-cm-service
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.database_name
+  - name: MICROSERVICE_NAME
+    objref:
+      kind: ConfigMap
+      name: kubernetes-otc-kustomize-cm-service
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.microservice_name
+  - name: RDS_INSTANCE_NAME
+    objref:
+      kind: ConfigMap
+      name: kubernetes-otc-kustomize-cm-service
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.rds_instance_name
+  - name: EXECUTION_DATE
+    objref:
+      kind: ConfigMap
+      name: kubernetes-otc-kustomize-cm-service
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.execution_date

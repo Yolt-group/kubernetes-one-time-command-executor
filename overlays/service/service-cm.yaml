@@ -1,0 +1,17 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kubernetes-otc-kustomize-cm-service
+data:
+  database_name: invoicing
+  microservice_name: invoicing
+  # use `rds` for all-in-one instances
+  # for dedicated instances use the service name prefixed with `rds-` (example: `rds-reconciliation`)
+  rds_hostname_prefix: rds
+  # use `rds` for all-in-one instances
+  # for dedicated instances use the service name (example: `reconciliation`)
+  rds_instance_name: rds
+  # Date to execute queries: MM/DD/YYYY (NB month first!)
+  execution_date: 02/20/2023
+

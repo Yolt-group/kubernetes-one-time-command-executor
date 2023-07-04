@@ -1,0 +1,7 @@
+varReference:
+- path: metadata/namespace
+  kind: Job
+- path: metadata/namespace
+  kind: ConfigMap
+- path: spec/template/spec/containers/image
+  kind: Job

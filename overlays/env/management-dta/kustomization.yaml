@@ -1,0 +1,35 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: $(POD_NAMESPACE)
+resources:
+- kubernetes-otc-cm.yaml
+vars:
+  - name: ENVIRONMENT_NAME
+    objref:
+      kind: ConfigMap
+      name: kubernetes-otc-kustomize-cm
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.cluster_name
+  - name: POD_NAMESPACE
+    objref:
+      kind: ConfigMap
+      name: kubernetes-otc-kustomize-cm
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.main_namespace
+  - name: CLUSTER_INDEX
+    objref:
+      kind: ConfigMap
+      name: kubernetes-otc-kustomize-cm
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.cluster_index
+  - name: NAMESPACE_PREFIX
+    objref:
+      kind: ConfigMap
+      name: kubernetes-otc-kustomize-cm
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.namespace_prefix

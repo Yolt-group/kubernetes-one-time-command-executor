@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kubernetes-otc-kustomize-cm
+data:
+  cluster_name: management-dta
+  cluster_index: "2"
+  vault_address: https://vault.yolt.io
+  main_namespace: devops
+  namespace_prefix: devops_

@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kubernetes-otc
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      annotations:
+        vault.hashicorp.com/agent-inject-secret-psql.sh: $(ENVIRONMENT_NAME)/database/$(RDS_INSTANCE_NAME)/creds/$(MICROSERVICE_NAME)
+        vault.hashicorp.com/agent-inject-template-psql.sh: |
+          {{- with secret "$(ENVIRONMENT_NAME)/database/$(RDS_INSTANCE_NAME)/creds/$(MICROSERVICE_NAME)" -}}
+          #!/bin/bash
+          PGDATABASE=$(MICROSERVICE_NAME) PGHOST=$(RDS_HOSTNAME_PREFIX).$(ENVIRONMENT_NAME).yolt.io PGPORT=5432 PGUSER={{- .Data.username }} PGPASSWORD={{- .Data.password }} /bin/bash /scripts/script.sh
+          {{- end }}
+    spec:
+      containers:
+      - args:
+        - -c
+        - "if [[ $(date +'%m/%d/%Y') != '$(EXECUTION_DATE)' ]] ; then echo 'wrong date to execute job' && exit 1000; fi; /bin/bash /vault/secrets/psql.sh;"
+        command:
+        - /bin/bash
+        image: 627987680837.dkr.ecr.eu-central-1.amazonaws.com/prd/sre/postgres:14.1-637348
+        name: kubernetes-otc
+        volumeMounts:
+          - mountPath: /scripts
+            name: scripts
+          - mountPath: /tmp
+            name: tmp-volume
+      volumes:
+        - configMap:
+            name: kubernetes-otc-query-sql-postgres-bash
+          name: scripts
+        - name: tmp-volume
+          emptyDir: {}
